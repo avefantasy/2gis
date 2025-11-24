@@ -33,7 +33,7 @@ jobs:
       # 4. Запускаем тесты и генерируем результаты для Allure
       - name: Run API tests with pytest and generate Allure results
         run: |
-          pytest -m regression --alluredir=allure-results --numprocesses 4
+          pytest -m regression --alluredir=allure-results
 
       # 5. Сохраняем Allure отчёт как артефакт
       - name: Upload Allure results
