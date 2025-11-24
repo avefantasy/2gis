@@ -80,7 +80,7 @@ jobs:
 
       # 5. Генерируем новый Allure отчёт
       - name: Generate Allure Report with history
-        uses: simple-elf/allure-report-action@v1.7
+        uses: simple-elf/allure-report-action@v1.8
         with:
           allure_results: allure-results
           allure_history: allure-history
