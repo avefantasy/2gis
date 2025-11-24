@@ -15,11 +15,11 @@ jobs:
     continue-on-error: true
 
     steps:
-      # 1. Клонируем репозиторий на виртуальную машину
+      # 1. Клонируем репозиторий
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # 2. Устанавливаем Python на виртуальную машину
+      # 2. Устанавливаем Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -28,15 +28,15 @@ jobs:
       # 3. Устанавливаем зависимости проекта
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip  
-          pip install -r requirements.txt       
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       # 4. Запускаем тесты и генерируем результаты для Allure
       - name: Run API tests with pytest and generate Allure results
         run: |
           pytest -m regression --alluredir=allure-results
 
-      # 5. Сохраняем Allure отчёт как артефакт
+      # 5. Сохраняем Allure результаты как артефакт
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -44,14 +44,13 @@ jobs:
           name: allure-results
           path: allure-results
 
-
   # ВТОРАЯ ДЖОБА: генерация и публикация Allure отчёта
   publish-report:
     runs-on: ubuntu-latest
     needs: run-tests
 
     steps:
-      # 1. Клонируем основной репозиторий
+      # 1. Клонируем репозиторий
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -62,7 +61,14 @@ jobs:
           name: allure-results
           path: allure-results
 
-      # 3. Клонируем ветку gh-pages в папку gh-pages
+      # 3. Устанавливаем Allure CLI
+      - name: Install Allure CLI
+        run: |
+          sudo apt-add-repository ppa:qameta/allure -y
+          sudo apt-get update
+          sudo apt-get install allure -y
+
+      # 4. Копируем историю отчётов из gh-pages
       - name: Get Allure history from gh-pages
         uses: actions/checkout@v4
         continue-on-error: true
@@ -70,26 +76,23 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      # 4. Переносим папку истории из gh-pages в allure-history
       - name: Copy history from previous report
         run: |
           mkdir -p allure-history
           if [ -d "gh-pages/history" ]; then
-            cp -r gh-pages/history allure-history/
+            cp -r gh-pages/history/* allure-history/
           fi
 
-      # 5. Генерируем новый Allure отчёт
+      # 5. Генерируем Allure отчёт
       - name: Generate Allure Report with history
-        uses: simple-elf/allure-report-action@v1.8
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 20
+        run: |
+          allure generate allure-results -o allure-report --clean
+          cp -r allure-report/history/* allure-history/ || true
 
-      # 6. Деплоим отчёт в ветку gh-pages
+      # 6. Деплоим отчёт на GitHub Pages
       - name: Deploy report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
