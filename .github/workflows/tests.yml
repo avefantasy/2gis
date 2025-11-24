@@ -90,6 +90,9 @@ jobs:
 
           allure generate allure-results -o allure-report --clean
 
+          mkdir -p gh-pages/history
+          cp -r allure-report/history/* gh-pages/history/
+
       # 5. Деплоим отчёт на GitHub Pages
       - name: Deploy report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

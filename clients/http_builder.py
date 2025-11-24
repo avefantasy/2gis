@@ -8,7 +8,7 @@ def get_public_http_client(token: str) -> Client:
     :return: Готовый к использованию объект httpx.Client.
     """
     client = Client(
-        timeout=2,
+        timeout=10,
         base_url="https://regions-test.2gis.com/",
         cookies={"token": token}
     )
