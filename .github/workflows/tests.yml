@@ -76,9 +76,12 @@ jobs:
             cp -r gh-pages/history/* allure-history/
           fi
 
-      # 4. Генерируем Allure отчёт с историей
+      # 4. Устанавливаем Allure CLI и генерируем отчёт
       - name: Generate Allure Report with history
         run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.zip
+          unzip -qq allure-2.25.0.zip -d /tmp
+          export PATH=$PATH:/tmp/allure-2.25.0/bin
           mkdir -p allure-report
           allure generate allure-results -o allure-report --clean
 
