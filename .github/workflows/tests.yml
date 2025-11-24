@@ -31,8 +31,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Запускаем тесты и генерируем результаты для Allure
-      - name: Run API tests with pytest and generate Allure results
+      # 4. Запускаем тесты и сохраняем результаты для Allure
+      - name: Run API tests with pytest
         run: |
           pytest -m regression --alluredir=allure-results
 
@@ -61,14 +61,7 @@ jobs:
           name: allure-results
           path: allure-results
 
-      # 3. Устанавливаем Allure CLI
-      - name: Install Allure CLI
-        run: |
-          sudo apt-add-repository ppa:qameta/allure -y
-          sudo apt-get update
-          sudo apt-get install allure -y
-
-      # 4. Копируем историю отчётов из gh-pages
+      # 3. Копируем историю отчётов из gh-pages
       - name: Get Allure history from gh-pages
         uses: actions/checkout@v4
         continue-on-error: true
@@ -83,13 +76,13 @@ jobs:
             cp -r gh-pages/history/* allure-history/
           fi
 
-      # 5. Генерируем Allure отчёт
+      # 4. Генерируем Allure отчёт с историей
       - name: Generate Allure Report with history
         run: |
+          mkdir -p allure-report
           allure generate allure-results -o allure-report --clean
-          cp -r allure-report/history/* allure-history/ || true
 
-      # 6. Деплоим отчёт на GitHub Pages
+      # 5. Деплоим отчёт на GitHub Pages
       - name: Deploy report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
