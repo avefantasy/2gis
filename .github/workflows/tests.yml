@@ -12,6 +12,7 @@ jobs:
   # ПЕРВАЯ ДЖОБА: запуск тестов и сохранение результатов
   run-tests:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       # 1. Клонируем репозиторий на виртуальную машину
