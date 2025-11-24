@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  # ПЕРВАЯ ДЖОБА: запуск тестов и сохранение результатов
+  #Запуск тестов и сохранение результатов
   run-tests:
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -44,7 +44,7 @@ jobs:
           name: allure-results
           path: allure-results
 
-  # ВТОРАЯ ДЖОБА: генерация и публикация Allure отчёта
+  # Генерация и публикация Allure отчёта
   publish-report:
     runs-on: ubuntu-latest
     needs: run-tests
